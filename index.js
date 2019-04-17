@@ -25,6 +25,7 @@ const showStatus = (msg) => {
 }
 
 const clearResults = () => {
+  document.getElementById('results').style.background = ''
   $('#h0').hide()
   Object.keys(SLOTS).forEach((element) => {
     $(`#${element}`).text('')
@@ -76,6 +77,7 @@ const processAndDisplay = () => {
   if (sortable.length) {
     $('#h6').text(sortable.reverse().map(item => item.artist).join(SEPARATOR))
   }
+  generateBackground()
   htmlToImage()
 }
 
@@ -123,6 +125,29 @@ const htmlToImage = () => {
       $('#download').show()
     })
   })
+}
+
+/**
+ * Generate a random gradient background, Coachella-style
+ * based on https://codepen.io/chrisgresh/pen/aNjovb
+ */
+function generateBackground() {
+  var hexValues = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+    'a', 'b', 'c', 'd', 'e']
+  function populate (a) {
+    for (var i = 0; i < 6; i++) {
+      var x = Math.round(Math.random() * 14)
+      var y = hexValues[x]
+      a += y
+    }
+    return a
+  }
+  var newColor1 = populate('#')
+  var newColor2 = populate('#')
+  var angle = Math.round(Math.random() * 360)
+  var gradient = `linear-gradient(${angle}deg, ${newColor1}, ${newColor2})`
+  document.getElementById('results').style.background = gradient
+  // document.getElementById("output").innerHTML = gradient;
 }
 
 const main = () => {
