@@ -11,6 +11,8 @@ const SLOTS = {
   h6: 0
 }
 const SEPARATOR = ' \u2022 '
+let results = []
+let previousUserId
 
 SC.initialize({
   client_id: CLIENT_ID
@@ -27,7 +29,7 @@ const clearResults = () => {
   })
 }
 
-const processAndDisplay = (results) => {
+const processAndDisplay = () => {
   // Map of {<artist_name>: {yourLikes:..., totalLikes:...}>
   const artists = {}
   results.forEach((entry) => {
@@ -44,11 +46,14 @@ const processAndDisplay = (results) => {
     sortable.push({ artist, counts })
   }
   console.log('number of results:', sortable.length)
-  const threshold = sortable.length > 150 ? 1 : 0
+  const defaultThreshold = sortable.length > 150 ? 2 : 1
+  const weight = document.getElementById('weight').valueAsNumber
+  const threshold = Number($('input[name=threshold]:checked').val()) || defaultThreshold
+  console.log('threshold and weight', threshold, weight)
   sortable = sortable.filter((item) => {
-    return item.counts.yourLikes > threshold
+    return item.counts.yourLikes >= threshold
   }).sort((a, b) => {
-    return a.counts.totalLikes - b.counts.totalLikes
+    return (a.counts.totalLikes * a.counts.yourLikes ** (weight - 1)) - (b.counts.totalLikes * b.counts.yourLikes ** (weight - 1))
   })
   showStatus('')
   $('#h0').show()
@@ -84,7 +89,7 @@ const getTitle = (userId) => {
   })
 }
 
-$('#go').click(() => {
+const main = () => {
   clearResults()
   showStatus('generating a sick lineup...')
   const rss = $('#userId').val()
@@ -94,27 +99,43 @@ $('#go').click(() => {
     return
   }
   const userId = match[0]
-  let results = []
+
+  if (userId === previousUserId && results.length) {
+    // use cached results
+    console.log('using cached results')
+    processAndDisplay()
+    return
+  }
+
+  results = []
+  previousUserId = userId
   getTitle(userId)
+
   SC.get(`/users/${userId}/favorites`, {
     limit: PAGE_SIZE,
     linked_partitioning: 1
   }).then((result) => {
     results = results.concat(result.collection)
+
     if (result.next_href) {
       $.getJSON(result.next_href, function (result) {
         results = results.concat(result.collection)
+
         if (result.next_href) {
           $.getJSON(result.next_href, function (result) {
             results = results.concat(result.collection)
-            processAndDisplay(results)
+
+            processAndDisplay()
           })
         } else {
-          processAndDisplay(results)
+          processAndDisplay()
         }
       })
     } else {
-      processAndDisplay(results)
+      processAndDisplay()
     }
   })
-})
+}
+
+$('#go').click(main)
+$('#controls input').change(main)

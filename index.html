@@ -12,6 +12,31 @@
             <p>To find your SoundCloud RSS link, <a href="https://soundcloud.com/settings/content">click here</a>.</p>
             <input id='userId' placeholder='Enter your SoundCloud RSS link or user number' style='width:400px' />
             <button id='go'>make me a music festival</button>
+            <div style='font-size: 16; color: #666' id='controls'>
+				<div style='margin-top:20px'>
+				  <input type="radio" id="opt0" name="threshold" value="0"
+						 checked>
+				  <label for="opt0">filter automatically</label>
+				</div>
+				<div>
+				  <input type="radio" id="opt1" name="threshold" value="1">
+				  <label for="opt1">no filter</label>
+				</div>
+				<div>
+				  <input type="radio" id="opt2" name="threshold" value="2">
+				  <label for="opt2">filter artists i've liked only once</label>
+				</div>
+				<div>
+				  <input type="radio" id="opt3" name="threshold" value="3">
+				  <label for="opt3">...twice</label>
+				</div>
+				<div>
+				  <input type="radio" id="opt4" name="threshold" value="4">
+				  <label for="opt4">...thrice</label>
+				</div>
+                <input style='margin-top:20px' type="range" id="weight" name="weight" min="0" max="10" value="1">
+                <label for="weight">Weight of my likes on artist ranking</label>
+            </div>
         </div>
         <p id='status' style='color: #666; font-size: 15px'></p>
         <div id='results' style='max-width:700px; font-family: Impact, Charcoal, sans-serif; font-size: 22'>
