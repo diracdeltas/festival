@@ -2,6 +2,7 @@ const CLIENT_ID = 'FweeGBOOEOYJWLJN3oEyToGLKhmSz0I7'
 const PAGE_SIZE = 200
 // Number of artists in each tier.
 const SLOTS = {
+  h0: 0,
   h1: 3,
   h2: 6,
   h3: 12,
@@ -65,6 +66,19 @@ const processAndDisplay = (results, threshold) => {
   }
 }
 
+/**
+ * Takes a user ID and returns a silly festival title
+ */
+const getTitle = (userId) => {
+  SC.get(`/users/${userId}`).then((result) => {
+    if (!result.username) { return }
+    const name = result.username.split(' ').pop()
+    const suffixes = ['fest', 'chella', ' in a Bottle', ' Carnival', 'palooza', 'land', ` by ${name}west`]
+    const suffix = suffixes[Math.floor(Math.random() * suffixes.length)]
+    $('#h0').text(`${name}${suffix} 2019`)
+  })
+}
+
 $('#go').click(() => {
   clearResults()
   showStatus('generating a sick lineup...')
@@ -76,6 +90,7 @@ $('#go').click(() => {
   }
   const userId = match[0]
   let results = []
+  getTitle(userId)
   SC.get(`/users/${userId}/favorites`, {
     limit: PAGE_SIZE,
     linked_partitioning: 1
