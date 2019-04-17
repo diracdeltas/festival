@@ -13,6 +13,7 @@ const SLOTS = {
 const SEPARATOR = ' \u2022 '
 let results = []
 let previousUserId
+let previousUserName
 
 SC.initialize({
   client_id: CLIENT_ID
@@ -76,16 +77,25 @@ const processAndDisplay = () => {
   }
 }
 
+const setTitle = (userName) => {
+  const name = userName.split(' ').pop()
+  const suffixes = ['fest', 'chella', ' in a Bottle', 'palooza', ` by ${name}west`, 'land']
+  const suffix = suffixes[Math.floor(Math.random() * suffixes.length)]
+  $('#h0').text(`${name}${suffix} 2019`)
+}
+
 /**
  * Takes a user ID and returns a silly festival title
  */
 const getTitle = (userId) => {
+  if (previousUserName && userId === previousUserId) {
+    setTitle(previousUserName)
+    return
+  }
   SC.get(`/users/${userId}`).then((result) => {
     if (!result.username) { return }
-    const name = result.username.split(' ').pop()
-    const suffixes = ['fest', 'chella', ' in a Bottle', 'palooza', ` by ${name}west`, 'land']
-    const suffix = suffixes[Math.floor(Math.random() * suffixes.length)]
-    $('#h0').text(`${name}${suffix} 2019`)
+    previousUserName = result.username
+    setTitle(result.username)
   })
 }
 
@@ -104,6 +114,7 @@ const main = () => {
     // use cached results
     console.log('using cached results')
     processAndDisplay()
+    getTitle(userId)
     return
   }
 
