@@ -145,7 +145,7 @@ function generateBackground() {
   var newColor1 = populate('#')
   var newColor2 = populate('#')
   var angle = Math.round(Math.random() * 360)
-  var gradient = `linear-gradient(${angle}deg, ${newColor1}, ${newColor2})`
+  var gradient = `linear-gradient(${angle}deg, ${newColor1}e0, ${newColor2}e0)`
   document.getElementById('results').style.background = gradient
   // document.getElementById("output").innerHTML = gradient;
 }
