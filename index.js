@@ -20,6 +20,7 @@ const showStatus = (msg) => {
 }
 
 const clearResults = () => {
+  $('#h0').hide()
   Object.keys(SLOTS).forEach((element) => {
     $(`#${element}`).text('')
   })
@@ -47,6 +48,7 @@ const processAndDisplay = (results, threshold) => {
     return a.counts.totalLikes - b.counts.totalLikes
   })
   showStatus('')
+  $('#h0').show()
   for (let tier in SLOTS) {
     const num = SLOTS[tier]
     for (let i = 0; i < num; i++) {
@@ -73,7 +75,7 @@ const getTitle = (userId) => {
   SC.get(`/users/${userId}`).then((result) => {
     if (!result.username) { return }
     const name = result.username.split(' ').pop()
-    const suffixes = ['fest', 'chella', ' in a Bottle', ' Carnival', 'palooza', 'land', ` by ${name}west`]
+    const suffixes = ['fest', 'chella', ' in a Bottle', 'palooza', ` by ${name}west`, 'land']
     const suffix = suffixes[Math.floor(Math.random() * suffixes.length)]
     $('#h0').text(`${name}${suffix} 2019`)
   })
