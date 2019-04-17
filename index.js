@@ -79,9 +79,12 @@ const processAndDisplay = () => {
 
 const setTitle = (userName) => {
   const name = userName.split(' ').pop()
-  const suffixes = ['fest', 'chella', ' in a Bottle', 'palooza', ` by ${name}west`, 'land']
-  const suffix = suffixes[Math.floor(Math.random() * suffixes.length)]
-  $('#h0').text(`${name}${suffix} 2019`)
+  const names = [`${name}fest`, `${name}chella`, `${name} in a Bottle`,
+    `${name}palooza`, `${name} by ${name}west`, `${name}land`,
+    `${name}ing Man`, `Hardly Strictly ${name}`
+  ]
+  const festname = names[Math.floor(Math.random() * names.length)]
+  $('#h0').text(`${festname.toUpperCase()} 2019`)
 }
 
 /**
