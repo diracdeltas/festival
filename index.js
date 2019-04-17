@@ -11,19 +11,28 @@ const SLOTS = {
   h6: 0
 }
 const SEPARATOR = ' \u2022 '
+
+// Cached info
 let results = []
-let previousUserId
 let previousUserName
+let previousUrl
 let downloadUrl
 
 SC.initialize({
   client_id: CLIENT_ID
 })
 
+/**
+ * Show status or error to the user.
+ * @param {string} msg
+ */
 const showStatus = (msg) => {
   $('#status').text(msg)
 }
 
+/**
+ * Clear the results section. Called every time a parameter is changed.
+ */
 const clearResults = () => {
   document.getElementById('results').style.background = ''
   $('#h0').hide()
@@ -32,6 +41,27 @@ const clearResults = () => {
   })
 }
 
+/**
+ * Given a soundcloud URL, this finds the corresponding user ID.
+ * @param {string} scUrl
+ * @param {Function<Number, string>} onSuccess
+ * @param {Function} onError
+ */
+const getUserId = (scUrl, onSuccess, onFail) => {
+  const resolveUrl =
+    `https://api.soundcloud.com/resolve.json?url=${scUrl}&client_id=${CLIENT_ID}`
+  $.getJSON(resolveUrl, (response) => {
+    if (response.id) {
+      onSuccess(response.id, response.username)
+    } else {
+      onFail(onFail)
+    }
+  }).fail(onFail)
+}
+
+/**
+ * Calculate and render the results.
+ */
 const processAndDisplay = () => {
   // Map of {<artist_name>: {yourLikes:..., totalLikes:...}>
   const artists = {}
@@ -92,21 +122,6 @@ const setTitle = (userName) => {
 }
 
 /**
- * Takes a user ID and returns a silly festival title
- */
-const getTitle = (userId) => {
-  if (previousUserName && userId === previousUserId) {
-    setTitle(previousUserName)
-    return
-  }
-  SC.get(`/users/${userId}`).then((result) => {
-    if (!result.username) { return }
-    previousUserName = result.username
-    setTitle(result.username)
-  })
-}
-
-/**
  * Takes results and converts it to an image.
  * Based on
  * https://stackoverflow.com/questions/10721884/render-html-to-an-image
@@ -117,7 +132,7 @@ const htmlToImage = () => {
   html2canvas(document.getElementById('results'), {
     scale: 1,
     width: '740px'
-  }).then(canvas => {
+  }).then((canvas) => {
     canvas.toBlob((blob) => {
       downloadUrl = window.URL.createObjectURL(blob)
       $('#download').attr('href', downloadUrl)
@@ -150,33 +165,9 @@ function generateBackground() {
   // document.getElementById("output").innerHTML = gradient;
 }
 
-const main = () => {
-  clearResults()
-  showStatus('generating a sick lineup...')
-  if (downloadUrl) {
-    window.URL.revokeObjectURL(downloadUrl)
-  }
-  const rss = $('#userId').val()
-  const match = rss.match(/\d+/)
-  if (!match) {
-    showStatus('Error: Input was not a number or RSS link.')
-    return
-  }
-  const userId = match[0]
-
-  if (userId === previousUserId && results.length) {
-    // use cached results
-    console.log('using cached results')
-    processAndDisplay()
-    getTitle(userId)
-    return
-  }
-
-  getTitle(userId)
-  results = []
-  previousUserName = ''
-  previousUserId = userId
-
+const onSuccess = (userId, username) => {
+  setTitle(username)
+  previousUserName = username
   SC.get(`/users/${userId}/favorites`, {
     limit: PAGE_SIZE,
     linked_partitioning: 1
@@ -201,6 +192,34 @@ const main = () => {
       processAndDisplay()
     }
   })
+}
+const onFail = () => {
+  showStatus('Error: Could not find SoundCloud user. Please check your spelling.')
+}
+
+/**
+ * Download the results, sort and display them.
+ */
+const main = () => {
+  clearResults()
+  showStatus('generating a sick lineup...')
+  if (downloadUrl) {
+    window.URL.revokeObjectURL(downloadUrl)
+  }
+  const scUrl = $('#userId').val()
+
+  if (scUrl === previousUrl && results.length) {
+    // use cached results
+    console.log('using cached results')
+    processAndDisplay()
+    setTitle(previousUserName)
+    return
+  }
+
+  results = []
+  previousUrl = scUrl
+  previousUserName = ''
+  getUserId(scUrl, onSuccess, onFail)
 }
 
 $('#go').click(main)
