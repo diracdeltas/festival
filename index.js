@@ -14,6 +14,7 @@ const SEPARATOR = ' \u2022 '
 let results = []
 let previousUserId
 let previousUserName
+let downloadUrl
 
 SC.initialize({
   client_id: CLIENT_ID
@@ -75,6 +76,7 @@ const processAndDisplay = () => {
   if (sortable.length) {
     $('#h6').text(sortable.reverse().map(item => item.artist).join(SEPARATOR))
   }
+  htmlToImage()
 }
 
 const setTitle = (userName) => {
@@ -102,9 +104,33 @@ const getTitle = (userId) => {
   })
 }
 
+/**
+ * Takes results and converts it to an image.
+ * Based on
+ * https://stackoverflow.com/questions/10721884/render-html-to-an-image
+ * @param {HTML5Element} element
+ * @returns {string}
+ */
+const htmlToImage = () => {
+  html2canvas(document.getElementById('results'), {
+    scale: 1,
+    width: '740px'
+  }).then(canvas => {
+    canvas.toBlob((blob) => {
+      downloadUrl = window.URL.createObjectURL(blob)
+      $('#download').attr('href', downloadUrl)
+      $('#download').attr('download', `${previousUserName}-lineup.png`)
+      $('#download').show()
+    })
+  })
+}
+
 const main = () => {
   clearResults()
   showStatus('generating a sick lineup...')
+  if (downloadUrl) {
+    window.URL.revokeObjectURL(downloadUrl)
+  }
   const rss = $('#userId').val()
   const match = rss.match(/\d+/)
   if (!match) {

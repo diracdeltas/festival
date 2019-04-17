@@ -1,8 +1,9 @@
 <html>
     <head>
         <title>music festival lineup generator</title>
-        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; script-src 'self' https://connect.soundcloud.com; style-src 'unsafe-inline'; connect-src https://api.soundcloud.com">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data:; script-src 'self' https://connect.soundcloud.com; style-src 'unsafe-inline'; connect-src https://api.soundcloud.com">
         <script src="jquery-3.4.0.min.js"></script>
+        <script src="html2canvas.min.js"></script>
         <script src="https://connect.soundcloud.com/sdk/sdk-3.3.2.js"></script>
     </head>
     <body style='margin:50px; font-size:18;'>
@@ -40,9 +41,12 @@
             </div>
         </div>
         <p id='status' style='color: #666; font-size: 15px'></p>
-        <div id='results' style='max-width:700px; font-family: Impact, Charcoal, sans-serif; font-size: 22'>
+        <p style='margin-left:20px'>
+          <a id='download' style='display:none'>Download as image</a>
+        </p>
+        <div id='results' style='max-width:700px; padding-left: 20px; padding-right: 20px; padding-bottom: 1px; padding-top:1px; font-family: Impact, Charcoal, sans-serif; font-size: 22'>
             <h1 id='h0' style='font-size:230%; font-family: papyrus, fantasy; margin-bottom: 0; line-height: 53px'></h1>
-            <h1 id='h1' style='margin-top: 17px'></h1>
+            <h1 id='h1' style='margin-top: 20px'></h1>
             <h2 id='h2'></h2>
             <h3 id='h3'></h3>
             <h4 id='h4'></h4>
