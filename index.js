@@ -7,7 +7,8 @@ const SLOTS = {
   h2: 6,
   h3: 12,
   h4: 24,
-  h5: 36
+  h5: 36,
+  h6: 0
 }
 const SEPARATOR = ' \u2022 '
 
@@ -26,7 +27,7 @@ const clearResults = () => {
   })
 }
 
-const processAndDisplay = (results, threshold) => {
+const processAndDisplay = (results) => {
   // Map of {<artist_name>: {yourLikes:..., totalLikes:...}>
   const artists = {}
   results.forEach((entry) => {
@@ -42,6 +43,8 @@ const processAndDisplay = (results, threshold) => {
     const counts = artists[artist]
     sortable.push({ artist, counts })
   }
+  console.log('number of results:', sortable.length)
+  const threshold = sortable.length > 150 ? 1 : 0
   sortable = sortable.filter((item) => {
     return item.counts.yourLikes > threshold
   }).sort((a, b) => {
@@ -101,10 +104,17 @@ $('#go').click(() => {
     if (result.next_href) {
       $.getJSON(result.next_href, function (result) {
         results = results.concat(result.collection)
-        processAndDisplay(results, 1)
+        if (result.next_href) {
+          $.getJSON(result.next_href, function (result) {
+            results = results.concat(result.collection)
+            processAndDisplay(results)
+          })
+        } else {
+          processAndDisplay(results)
+        }
       })
     } else {
-      processAndDisplay(results, 0)
+      processAndDisplay(results)
     }
   })
 })
