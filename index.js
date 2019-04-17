@@ -87,7 +87,7 @@ $('#go').click(() => {
   const rss = $('#userId').val()
   const match = rss.match(/\d+/)
   if (!match) {
-    showStatus('Error: Invalid RSS link.')
+    showStatus('Error: Input was not a number or RSS link.')
     return
   }
   const userId = match[0]
