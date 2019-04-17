@@ -121,9 +121,10 @@ const main = () => {
     return
   }
 
-  results = []
-  previousUserId = userId
   getTitle(userId)
+  results = []
+  previousUserName = ''
+  previousUserId = userId
 
   SC.get(`/users/${userId}/favorites`, {
     limit: PAGE_SIZE,
