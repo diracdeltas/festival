@@ -23,11 +23,29 @@ SC.initialize({
 })
 
 /**
+ * Gets a SoundCloud URL from a username if needed
+ * @param {string} input
+ */
+const getSoundcloudUrl = (input) => {
+  input = input.toLowerCase().trim()
+  if (input.startsWith('http://') || input.startsWith('https://')) {
+    return input
+  }
+  return `https://soundcloud.com/${input}`
+}
+
+/**
  * Show status or error to the user.
  * @param {string} msg
+ * @param {boolean} showLoader
  */
-const showStatus = (msg) => {
+const showStatus = (msg, showLoader) => {
   $('#status').text(msg)
+  if (showLoader) {
+    $('#loader').show()
+  } else {
+    $('#loader').hide()
+  }
 }
 
 /**
@@ -202,11 +220,11 @@ const onFail = () => {
  */
 const main = () => {
   clearResults()
-  showStatus('generating a sick lineup...')
+  showStatus('', true)
   if (downloadUrl) {
     window.URL.revokeObjectURL(downloadUrl)
   }
-  const scUrl = $('#userId').val()
+  const scUrl = getSoundcloudUrl($('#userId').val())
 
   if (scUrl === previousUrl && results.length) {
     // use cached results
