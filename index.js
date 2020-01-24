@@ -1,4 +1,4 @@
-const CLIENT_ID = 'FweeGBOOEOYJWLJN3oEyToGLKhmSz0I7'
+const CLIENT_ID = '3UT1QkKC2kBqMLmSnbLbIps1suqeSlRs'
 const PAGE_SIZE = 200
 // Number of artists in each tier.
 const SLOTS = {
