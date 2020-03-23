@@ -242,3 +242,8 @@ const main = () => {
 
 $('#go').click(main)
 $('#controls input').change(main)
+$('#userId').on('keyup', function (e) {
+  if (e.keyCode === 13) {
+    main()
+  }
+})
